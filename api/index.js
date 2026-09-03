@@ -63,12 +63,23 @@ app.get("/", (req, res) => {
 });
 
 // HEALTH CHECK
-app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    status: "ok",
-    mongoDB: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-  });
+app.get("/api/health", async (req, res) => {
+  try {
+    await connectDB();
+
+    res.status(200).json({
+      success: true,
+      status: "ok",
+      mongoDB: "Connected",
+    });
+  } catch (error) {
+    res.status(503).json({
+      success: false,
+      status: "error",
+      mongoDB: "Disconnected",
+      error: error.message,
+    });
+  }
 });
 
 app.use("/api/orders", async (req, res, next) => {
