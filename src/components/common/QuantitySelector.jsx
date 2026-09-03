@@ -1,6 +1,4 @@
 
-import React from "react";
-
 function QuantitySelector({
   quantity,
   increaseQuantity,

@@ -17,5 +17,15 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    files: ['api/**/*.js', 'server/**/*.js', 'test-mongo.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
   },
 ])

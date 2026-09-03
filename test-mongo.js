@@ -2,7 +2,12 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const uri = process.env.MONGO_URI || 'mongodb+srv://techzone_user:TechZone2026@cluster0.fu16m2o.mongodb.net/techzone?appName=Cluster0';
+const uri = process.env.MONGO_URI;
+
+if (!uri) {
+  console.error('MONGO_URI is not set.');
+  process.exit(1);
+}
 
 console.log('Connecting to MongoDB Atlas...');
 console.log('URI:', uri.replace(/\/\/.*@/, '//<credentials>@'));
