@@ -32,15 +32,6 @@ const connectDB = async () => {
 };
 connectDB();
 
-// TEST ROUTE - No database needed
-app.get("/hello", (req, res) => {
-  res.status(200).json({ 
-    success: true, 
-    message: "Hello from Vercel!",
-    timestamp: new Date().toISOString()
-  });
-});
-
 // ROOT ROUTE
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -55,15 +46,6 @@ app.get("/api/health", (req, res) => {
     success: true,
     status: "ok",
     mongoDB: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-  });
-});
-
-// ORDERS ROUTE (Temporarily minimal)
-app.get("/api/orders", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Orders endpoint works",
-    orders: []
   });
 });
 
