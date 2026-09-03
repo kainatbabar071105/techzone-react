@@ -60,9 +60,15 @@ app.get("/", (req, res) => {
 app.use("/api/orders", orderRoutes);
 
 // ========================================
-// START SERVER
+// START SERVER (Local Development)
 // ========================================
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 TechZone server running on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`🚀 TechZone server running on port ${PORT}`);
-});
+// ========================================
+// EXPORT FOR VERCEL (Serverless)
+// ========================================
+export default app;
