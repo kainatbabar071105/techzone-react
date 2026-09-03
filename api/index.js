@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import orderRoutes from "../server/routes/OrderRoutes.js";
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: "server/.env" });
 
 const app = express();
 
