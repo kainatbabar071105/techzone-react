@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
+import { API_URL } from "../config";
 
 function Checkout() {
   const navigate = useNavigate();
@@ -229,7 +230,7 @@ function Checkout() {
       // ======================================
 
       const response = await fetch(
-        "http://localhost:5000/api/orders",
+        `${API_URL}/api/orders`,
         {
           method: "POST",
 

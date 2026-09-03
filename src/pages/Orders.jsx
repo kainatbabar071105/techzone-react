@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../config";
 
 function Orders() {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ function Orders() {
       // FETCH ORDERS FROM BACKEND
       // ----------------------------------------
 
-      const response = await fetch(`http://localhost:5000/api/orders/user/${user.id}`)
+      const response = await fetch(`${API_URL}/api/orders/user/${user.id}`)
 
       const data = await response.json();
 
@@ -132,7 +133,7 @@ async function handleDeleteOrder(orderId) {
     // ======================================
 
     const response = await fetch(
-      `http://localhost:5000/api/orders/${orderId}?userId=${user.id}`,
+      `${API_URL}/api/orders/${orderId}?userId=${user.id}`,
       {
         method: "DELETE",
       },

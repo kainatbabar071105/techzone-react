@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../config";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -15,7 +16,7 @@ function AdminOrders() {
       setError("");
 
       const response = await fetch(
-        "http://localhost:5000/api/orders"
+        `${API_URL}/api/orders`
       );
 
       const data = await response.json();
@@ -53,7 +54,7 @@ function AdminOrders() {
   async function updateStatus(orderId, newStatus) {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${API_URL}/api/orders/${orderId}/status`,
         {
           method: "PUT",
 

@@ -2,20 +2,28 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-
 import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
 
 // ========================================
 // MIDDLEWARE
 // ========================================
 
-app.use(cors());
+// CORS - Frontend domains ko allow karein
+app.use(cors({
+  origin: [
+    'https://techzone-react.vercel.app',
+    'https://techzone-react-sand.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ========================================
@@ -26,13 +34,12 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("========================================");
-    console.log("MongoDB Connected:", mongoose.connection.host);
-    console.log("Database Name:", mongoose.connection.name);
-    console.log("MongoDB Port:", mongoose.connection.port);
+    console.log("✅ MongoDB Connected:", mongoose.connection.host);
+    console.log("✅ Database Name:", mongoose.connection.name);
     console.log("========================================");
   })
   .catch((error) => {
-    console.error("MongoDB Connection Error:", error);
+    console.error("❌ MongoDB Connection Error:", error);
   });
 
 // ========================================
@@ -56,8 +63,6 @@ app.use("/api/orders", orderRoutes);
 // START SERVER
 // ========================================
 
-app.listen(PORT, "127.0.0.1", () => {
-  console.log(
-    `TechZone server running at http://127.0.0.1:${PORT}`
-  );
+app.listen(PORT, () => {
+  console.log(`🚀 TechZone server running on port ${PORT}`);
 });
