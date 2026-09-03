@@ -22,15 +22,37 @@ app.use(cors({
 app.use(express.json());
 
 // MongoDB Connection
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ MongoDB Connected");
-  } catch (error) {
+let connectionPromise;
+
+const connectDB = () => {
+  if (!process.env.MONGO_URI) {
+    const error = new Error("MONGO_URI is not configured");
     console.error("❌ MongoDB Connection Error:", error.message);
+    return Promise.reject(error);
   }
+
+  if (mongoose.connection.readyState === 1) {
+    return Promise.resolve();
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000,
+      })
+      .then(() => {
+        console.log("✅ MongoDB Connected");
+      })
+      .catch((error) => {
+        connectionPromise = undefined;
+        console.error("❌ MongoDB Connection Error:", error.message);
+        throw error;
+      });
+  }
+
+  return connectionPromise;
 };
-connectDB();
+connectDB().catch(() => {});
 
 // ROOT ROUTE
 app.get("/", (req, res) => {
@@ -47,6 +69,19 @@ app.get("/api/health", (req, res) => {
     status: "ok",
     mongoDB: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
   });
+});
+
+app.use("/api/orders", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(503).json({
+      success: false,
+      message: "Database unavailable",
+      error: error.message,
+    });
+  }
 });
 
 app.use("/api/orders", orderRoutes);
