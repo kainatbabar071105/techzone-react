@@ -13,6 +13,7 @@ app.use(cors({
   origin: [
     'https://techzone-react.vercel.app',
     'https://techzone-react-sand.vercel.app',
+    'https://techzone-react-kappa.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
   ],
