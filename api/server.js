@@ -2,13 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import orderRoutes from "../server/routes/orderRoutes.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS
 app.use(cors({
   origin: [
     'https://techzone-react.vercel.app',
@@ -21,6 +21,7 @@ app.use(cors({
 
 app.use(express.json());
 
+// MongoDB Connection
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -31,6 +32,16 @@ const connectDB = async () => {
 };
 connectDB();
 
+// TEST ROUTE - No database needed
+app.get("/hello", (req, res) => {
+  res.status(200).json({ 
+    success: true, 
+    message: "Hello from Vercel!",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ROOT ROUTE
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -38,6 +49,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// HEALTH CHECK
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -46,8 +58,16 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.use("/api/orders", orderRoutes);
+// ORDERS ROUTE (Temporarily minimal)
+app.get("/api/orders", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Orders endpoint works",
+    orders: []
+  });
+});
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -55,4 +75,5 @@ app.use((req, res) => {
   });
 });
 
+// EXPORT FOR VERCEL
 export default app;
