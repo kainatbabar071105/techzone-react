@@ -27,29 +27,52 @@ app.use(cors({
 app.use(express.json());
 
 // ========================================
-// MONGODB CONNECTION
+// MONGODB CONNECTION (Enhanced Error Logging)
 // ========================================
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("========================================");
     console.log("✅ MongoDB Connected:", mongoose.connection.host);
     console.log("✅ Database Name:", mongoose.connection.name);
     console.log("========================================");
-  })
-  .catch((error) => {
-    console.error("❌ MongoDB Connection Error:", error);
-  });
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error.message);
+    // Keep the server running even if DB fails, so the test route still works
+  }
+};
+
+connectDB();
 
 // ========================================
-// TEST ROUTE
+// TEST ROUTE (Root Path)
 // ========================================
 
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "TechZone API is running 🚀",
+    endpoints: {
+      orders: "/api/orders",
+      health: "/api/health"
+    }
+  });
+});
+
+// ========================================
+// HEALTH CHECK ROUTE (For debugging)
+// ========================================
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+    mongoDB: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      MONGO_URI_EXISTS: !!process.env.MONGO_URI
+    }
   });
 });
 
@@ -60,8 +83,21 @@ app.get("/", (req, res) => {
 app.use("/api/orders", orderRoutes);
 
 // ========================================
-// START SERVER (Local Development)
+// CATCH-ALL ROUTE (404 Handler)
 // ========================================
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+    availableRoutes: ["/", "/api/health", "/api/orders"]
+  });
+});
+
+// ========================================
+// START SERVER (Local Development ONLY)
+// ========================================
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`🚀 TechZone server running on port ${PORT}`);
@@ -69,6 +105,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // ========================================
-// EXPORT FOR VERCEL (Serverless)
+// EXPORT FOR VERCEL (CRUCIAL!)
 // ========================================
+
 export default app;
