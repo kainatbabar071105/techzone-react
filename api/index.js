@@ -82,6 +82,19 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+// API DOCUMENTATION
+app.get("/docs", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "TechZone API documentation",
+    endpoints: {
+      health: "/api/health",
+      orders: "/api/orders",
+      userOrders: "/api/orders/user/:userId",
+    },
+  });
+});
+
 app.use("/api/orders", async (req, res, next) => {
   try {
     await connectDB();
